@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%message%n</pattern>
+    </encoder>
+  </appender>
+
+
+     <appender name="aiAppender" 
+      class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        <instrumentationKey></instrumentationKey>
+    </appender>
+    <root level="trace">
+      <appender-ref ref="aiAppender" />
+    </root>
+
+</configuration>

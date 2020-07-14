@@ -34,3 +34,21 @@ resource "azurerm_servicebus_subscription" "output" {
   topic_name          = azurerm_servicebus_topic.outputtopic.name
   max_delivery_count  = 1
 }
+
+
+resource "azurerm_servicebus_topic" "inputtopic" {
+  name                = "inputtopic"
+  resource_group_name = azurerm_resource_group.funcrg.name
+  namespace_name      = azurerm_servicebus_namespace.messagingbus.name
+
+  enable_partitioning = true
+}
+
+# https://www.terraform.io/docs/providers/azurerm/r/servicebus_subscription.html
+resource "azurerm_servicebus_subscription" "input" {
+  name                = "input"
+  resource_group_name = azurerm_resource_group.funcrg.name
+  namespace_name      = azurerm_servicebus_namespace.messagingbus.name
+  topic_name          = azurerm_servicebus_topic.inputtopic.name
+  max_delivery_count  = 1
+}

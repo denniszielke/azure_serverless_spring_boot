@@ -14,6 +14,15 @@ public class GreetingController {
 	public String home() {
 		LocalDate myDate = LocalDate.now();
 		LocalTime mytime = LocalTime.now();
+		System.out.println("got / connectionstring: " + myDate.toString() + " " + mytime.toString());
 		return "hi " + myDate.toString() + " " + mytime.toString();
+	}
+
+	@GetMapping("/hello")
+	public String hello() {
+		LocalDate myDate = LocalDate.now();
+		LocalTime mytime = LocalTime.now();
+		System.out.println("got /hello connectionstring: " + myDate.toString() + " " + mytime.toString());
+		return "hello " + myDate.toString() + " " + mytime.toString();
 	}
 }

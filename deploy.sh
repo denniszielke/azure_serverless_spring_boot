@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o pipefail
 
-# ./deploy.sh team1 
+# ./deploy.sh apim234 
 
 export deployment_name="$1"
 export terra_path="$2"

@@ -27,13 +27,29 @@ public class AppEvents {
 
     static final Gson GSON = new Gson();
 
+    static final String SB_CONNECTIONSTRING = "SB_CONNECTIONSTRING";
+    static final String SB_CONNECTIONSTRING_VAULT = "SB_CONNECTIONSTRING_VAULT";
+    static String ConnectionString = null;
+    
     @EventListener(ApplicationReadyEvent.class)
     public void startApp() throws Exception  {
 
-        System.out.println("hello world, I have just started up");
-        System.out.println(DemoApplication.ConnectionString);
+        String env = System.getenv(SB_CONNECTIONSTRING);
+        if (env != null) {
+            AppEvents.ConnectionString = env;
+            System.out.println("Found connectionstring: " + env);
+        }
 
-        if(DemoApplication.ConnectionString == null || DemoApplication.ConnectionString == "Empty"){
+        String vault = System.getenv(SB_CONNECTIONSTRING_VAULT );
+        if (vault != null) {
+            AppEvents.ConnectionString = vault;
+            System.out.println("Found vault connectionstring: " + vault);
+        }
+
+        System.out.println("hello world, I have just started up");
+        System.out.println(AppEvents.ConnectionString);
+
+        if(AppEvents.ConnectionString == null || AppEvents.ConnectionString == "Empty"){
             Thread.sleep(5000);
             System.out.println("connection string empty - doing nothing");
         }
@@ -41,7 +57,7 @@ public class AppEvents {
             // Create a QueueClient instance for receiving using the connection string builder
             // We set the receive mode to "PeekLock", meaning the message is delivered
             // under a lock and must be acknowledged ("completed") to be removed from the queue
-            QueueClient receiveClient = new QueueClient(new ConnectionStringBuilder(DemoApplication.ConnectionString, "inputqueue"), ReceiveMode.PEEKLOCK);
+            QueueClient receiveClient = new QueueClient(new ConnectionStringBuilder(AppEvents.ConnectionString, "inputqueue"), ReceiveMode.PEEKLOCK);
             // We are using single thread executor as we are only processing one message at a time
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             this.registerReceiver(receiveClient, executorService);
@@ -69,8 +85,8 @@ public class AppEvents {
                                                        Map payload = GSON.fromJson(new String(body, UTF_8), Map.class);
 
                                                        System.out.printf(
-                                                               "\n\t\t\t\tMessage received: \n\t\t\t\t\t\tSequenceNumber = %s, \n\t\t\t\t\t\tEnqueuedTimeUtc = %s," +
-                                                                       "\n\t\t\t\t\t\tExpiresAtUtc = %s, \n\t\t\t\t\t\tContentType = \"%s\",  \n\t\t\t\t\t\tContent: [ name = %s ]\n",
+                                                               "Message received: SequenceNumber = %s, EnqueuedTimeUtc = %s," +
+                                                                       "ExpiresAtUtc = %s, ContentType = \"%s\",  Content: [ name = %s ]\n",
                                                                message.getSequenceNumber(),
                                                                message.getEnqueuedTimeUtc(),
                                                                message.getExpiresAtUtc(),
@@ -78,10 +94,10 @@ public class AppEvents {
                                                                payload != null ? payload.get("name") : "");
 
 														try {
-															TopicClient sendClient = new TopicClient(new ConnectionStringBuilder(DemoApplication.ConnectionString, "outputtopic"));
+															TopicClient sendClient = new TopicClient(new ConnectionStringBuilder(AppEvents.ConnectionString, "outputtopic"));
 															
 															sendClient.sendAsync(message).thenRunAsync(() -> {
-																System.out.printf("\tMessage sent acknowledged: Id = %s\n", message.getMessageId());
+																System.out.printf("Message sent acknowledged: Id = %s\n", message.getMessageId());
 																sendClient.closeAsync();
 															});
 												   		}catch(Exception e){

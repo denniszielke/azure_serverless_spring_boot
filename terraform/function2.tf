@@ -1,6 +1,6 @@
 # https://www.terraform.io/docs/providers/azurerm/r/storage_account.html
-resource "azurerm_storage_account" "function1_storage" {
-  name                     = "${var.deployment_name}func1"
+resource "azurerm_storage_account" "function2_storage" {
+  name                     = "${var.deployment_name}func2"
   resource_group_name      = azurerm_resource_group.funcrg.name
   location                 = azurerm_resource_group.funcrg.location
   account_tier             = "Standard"
@@ -8,8 +8,8 @@ resource "azurerm_storage_account" "function1_storage" {
   enable_https_traffic_only = true
 }
 
-resource "azurerm_app_service_plan" "function1_plan" {
-  name                = "${var.deployment_name}func1plan"
+resource "azurerm_app_service_plan" "function2_plan" {
+  name                = "${var.deployment_name}func2plan"
   resource_group_name      = azurerm_resource_group.funcrg.name
   location                 = azurerm_resource_group.funcrg.location
   kind                =  "linux" # "Linux" #"FunctionApp"
@@ -22,13 +22,13 @@ resource "azurerm_app_service_plan" "function1_plan" {
 }
 
 # https://www.terraform.io/docs/providers/azurerm/r/function_app.html
-resource "azurerm_function_app" "function1_app" {
-  name                      = "${var.deployment_name}func1app"
+resource "azurerm_function_app" "function2_app" {
+  name                      = "${var.deployment_name}func2app"
   resource_group_name      = azurerm_resource_group.funcrg.name
   location                 = azurerm_resource_group.funcrg.location
-  app_service_plan_id       = azurerm_app_service_plan.function1_plan.id
-  storage_account_name       = azurerm_storage_account.function1_storage.name
-  storage_account_access_key = azurerm_storage_account.function1_storage.primary_access_key
+  app_service_plan_id       = azurerm_app_service_plan.function2_plan.id
+  storage_account_name       = azurerm_storage_account.function2_storage.name
+  storage_account_access_key = azurerm_storage_account.function2_storage.primary_access_key
 
   os_type                   = "linux"
   version                    = "~3"
@@ -41,7 +41,7 @@ resource "azurerm_function_app" "function1_app" {
     #FUNCTION_APP_EDIT_MODE                    = "readOnly"
     FUNCTIONS_EXTENSION_VERSION               = "~3"
     https_only                                = true
-    DOCKER_REGISTRY_SERVER_URL                = "https://index.docker.io" # "https://mcr.microsoft.com" # azurerm_container_registry.funcacr.login_server
+    DOCKER_REGISTRY_SERVER_URL                = "https://index.docker.io"  #"https://mcr.microsoft.com" # azurerm_container_registry.funcacr.login_server
     DOCKER_REGISTRY_SERVER_USERNAME           = "" #azurerm_container_registry.funcacr.admin_username
     DOCKER_REGISTRY_SERVER_PASSWORD           = "" #azurerm_container_registry.funcacr.admin_password
     SB_CONNECTIONSTRING                       = azurerm_servicebus_namespace.messagingbus.default_primary_connection_string
@@ -55,7 +55,7 @@ resource "azurerm_function_app" "function1_app" {
   site_config {
     #pre_warmed_instance_count = 1
     #always_on         = true
-    linux_fx_version  = "DOCKER|denniszielke/servicebusmessenger:1" # "DOCKER|mcr.microsoft.com/azure-functions/dotnet:2.0-appservice-quickstart"
+    linux_fx_version  = "DOCKER|denniszielke/azurefunctiondemo"  #"DOCKER|mcr.microsoft.com/azure-functions/dotnet:2.0-appservice-quickstart"
     #linux_fx_version  = "DOCKER|${data.azurerm_container_registry.funcacr.login_server}/${var.func1containerimage}"
   }
 }

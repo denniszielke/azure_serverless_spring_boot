@@ -94,8 +94,8 @@ public class AppEvents {
                                                                payload != null ? payload.get("name") : "");
 
 														try {
-															TopicClient sendClient = new TopicClient(new ConnectionStringBuilder(AppEvents.ConnectionString, "outputtopic"));
-															
+															TopicClient sendClient = new TopicClient(new ConnectionStringBuilder(AppEvents.ConnectionString, "inputtopic"));
+															// message.setProperties()
 															sendClient.sendAsync(message).thenRunAsync(() -> {
 																System.out.printf("Message sent acknowledged: Id = %s\n", message.getMessageId());
 																sendClient.closeAsync();

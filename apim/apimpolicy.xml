@@ -1,12 +1,15 @@
-<set-header name="Authorization" exists-action="override">
-    <value>{{ServiceBusSasToken}}</value>
-</set-header>
-<set-header name="Content-type" exists-action="override">
-    <value>application/json</value>
-</set-header>
-<set-header name="Ocp-Apim-Subscription-Key" exists-action="delete" />
-<set-body>
-@{
+<policies>
+    <inbound>
+        <base />
+        <set-header name="Authorization" exists-action="override">
+            <value>{{ServiceBusSasToken}}</value>
+        </set-header>
+        <set-header name="Content-type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Ocp-Apim-Subscription-Key" exists-action="delete" />
+        <set-backend-service base-url="{{ServiceBusQueue}}" />
+        <set-body>@{
     string messagepayload = "{ name: 'someone' }"; 
     string[] value;
     if (context.Request.Headers.TryGetValue("Name", out value))
@@ -17,6 +20,15 @@
         }
     }
     return messagepayload;
-}
-</set-body>
-<set-backend-service base-url="https://apim400sb.servicebus.windows.net/inputqueue/messages" />
+}</set-body>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

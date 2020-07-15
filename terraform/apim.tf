@@ -25,6 +25,14 @@ resource "azurerm_api_management_named_value" "ServiceBusSasToken" {
   value               = "Placeholder value"
 }
 
+resource "azurerm_api_management_named_value" "ServiceBusQueue" {
+  name                = "ServiceBusQueue"
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = azurerm_resource_group.funcrg.name
+  display_name        = "ServiceBusQueue"
+  value               = "https://${azurerm_servicebus_namespace.messagingbus.name}.servicebus.windows.net/${azurerm_servicebus_queue.inputqueue.name}/messages"
+}
+
 # https://www.terraform.io/docs/providers/azurerm/r/api_management_api.html
 resource "azurerm_api_management_api" "messages" {
   name                  = "messages"
@@ -71,7 +79,7 @@ resource "azurerm_api_management_api_operation_policy" "newmessage" {
             <value>application/json</value>
         </set-header>
         <set-header name="Ocp-Apim-Subscription-Key" exists-action="delete" />
-        <set-backend-service base-url="https://apim400sb.servicebus.windows.net/inputqueue/messages" />
+        <set-backend-service base-url="{{ServiceBusQueue}}" />
         <set-body>@{
     string messagepayload = "{ name: 'someone' }"; 
     string[] value;

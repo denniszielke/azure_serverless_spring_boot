@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springrestmessaging
+  labels:
+    app: springrestmessaging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springrestmessaging
+  template:
+    metadata:
+      labels:
+        app: springrestmessaging
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/id: "springrestmessaging"
+        dapr.io/port: "8080"
+    spec:
+      containers:
+      - name: springrestmessaging
+        image: denniszielke/springrestmessaging
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always

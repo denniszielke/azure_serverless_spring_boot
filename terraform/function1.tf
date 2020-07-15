@@ -55,7 +55,7 @@ resource "azurerm_function_app" "function1_app" {
   site_config {
     #pre_warmed_instance_count = 1
     #always_on         = true
-    linux_fx_version  = "DOCKER|denniszielke/servicebusmessenger:1" # "DOCKER|mcr.microsoft.com/azure-functions/dotnet:2.0-appservice-quickstart"
+    linux_fx_version  = "DOCKER|denniszielke/servicebusmessenger" # "DOCKER|mcr.microsoft.com/azure-functions/dotnet:2.0-appservice-quickstart"
     #linux_fx_version  = "DOCKER|${data.azurerm_container_registry.funcacr.login_server}/${var.func1containerimage}"
   }
 }

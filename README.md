@@ -68,9 +68,11 @@ HASH=$(echo -n "$UTF8_SIGNATURE" | openssl sha256 -hmac $shared_access_key -bina
 
 ENCODED_HASH=$(echo -n $HASH | jq -s -R -r @uri)
 
+echo "put the following value into the named value for ServiceBusSasToken in your azure api management:"
 echo -n "SharedAccessSignature sr=$ENCODED_URI&sig=$ENCODED_HASH&se=$TTL&skn=$shared_access_key_name"
 
 curl -X POST https://$servicebus_uri/messages -H "Authorization: SharedAccessSignature sr=$ENCODED_URI&sig=$ENCODED_HASH&se=$TTL&skn=$shared_access_key_name" -H "Content-type: application/json" -H "Host: ${DEPLOYMENT_NAME}sb.servicebus.windows.net" --data "{\"name\":\"peter\"}" 
+
 ```
 
 ## Additional links
@@ -90,5 +92,7 @@ https://docs.microsoft.com/en-us/rest/api/servicebus/send-message-to-queue
 
 
 ## Post test message to apim
-curl -X POST https://dzfunct-apim.azure-api.net/messages -H "Name: dennis" --data ""
-
+```
+apim_uri=https://${DEPLOYMENT_NAME}apim.azure-api.net/messages
+curl -X POST $apim_uri -H "Name: dennis" -d ""
+```

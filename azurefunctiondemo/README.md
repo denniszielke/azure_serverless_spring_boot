@@ -16,4 +16,8 @@ mvn clean package
 func azure functionapp fetch-app-settings ${DEPLOYMENT_NAME}func2app
 
 mvn azure-functions:run
+
+docker build --tag denniszielke/azurefunctiondemo .
+
+docker push denniszielke/azurefunctiondemo
 ```

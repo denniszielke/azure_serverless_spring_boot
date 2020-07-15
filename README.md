@@ -16,6 +16,7 @@ This demo project is about demonstrating how to build event driven applications 
 ### Microservice 1
 
 Microservice 1 is a plain spring boot starter with the azure service bus sdk to subscribe to messages from `inputqueue` and route them to `inputtopic`.
+
 ![](/images/functionscontainer.png)
 
 Link: https://docs.microsoft.com/de-de/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-service-bus
@@ -25,6 +26,7 @@ Sourcecode in the servicebusmessenger folder
 ### Microservice 2
 
 Microservice 2 is using Azure Java Containers to using bindings to receive messages that have been published on the `inputtopic` and route them to `outputtopic`.
+
 ![](/images/functionbindings.png)
 
 Link: https://docs.microsoft.com/de-de/azure/azure-functions/functions-create-function-linux-custom-image?tabs=bash%2Cportal&pivots=programming-language-java
@@ -34,6 +36,7 @@ Sourcecode in the azurefunctiondemo folder
 ### Microservice 3
 
 Microservice 3 is using a Spring Boot app and a dapr container, which are running in an azure container instances. The Dapr sidecar is subscribing to the `outputtopic` and posts each messages via http to the Spring Boot app which does not have any azure sdk.
+
 ![](/images/acihosting.png)
 
 Sourcecode in the springrestmessaging folder

@@ -1,5 +1,18 @@
-# https://www.terraform.io/docs/providers/azurerm/r/api_management_backend.html
+# https://www.terraform.io/docs/providers/azurerm/r/user_assigned_identity.html
+resource "azurerm_user_assigned_identity" "apim_identity" {
+  resource_group_name = azurerm_resource_group.funcrg.name
+  location            = azurerm_resource_group.funcrg.location
 
+  name = "${var.deployment_name}apimid"
+}
+
+resource "azurerm_role_assignment" "apimservicebus" {
+  scope                = azurerm_servicebus_namespace.messagingbus.id
+  role_definition_name = "Azure Service Bus Data Sender"
+  principal_id         = azurerm_user_assigned_identity.apim_identity.principal_id
+}
+
+# https://www.terraform.io/docs/providers/azurerm/r/api_management.html
 resource "azurerm_api_management" "apim" {
   name                = "${var.deployment_name}apim"
   resource_group_name = azurerm_resource_group.funcrg.name
@@ -13,7 +26,8 @@ resource "azurerm_api_management" "apim" {
   sku_name            = "Developer_1"# #"Consumption_1" https://github.com/terraform-providers/terraform-provider-azurerm/issues/6730
 
   identity {
-    type = "SystemAssigned"
+    type = "UserAssigned"
+    identity_ids = [ azurerm_user_assigned_identity.apim_identity.id ]
   }
 }
 
@@ -72,8 +86,9 @@ resource "azurerm_api_management_api_operation_policy" "newmessage" {
 <policies>
     <inbound>
         <base />
+        <authentication-managed-identity resource="https://servicebus.azure.net" output-token-variable-name="msi-access-token" ignore-error="false" />
         <set-header name="Authorization" exists-action="override">
-            <value>{{ServiceBusSasToken}}</value>
+          <value>@((string)context.Variables["msi-access-token"])</value>
         </set-header>
         <set-header name="Content-type" exists-action="override">
             <value>application/json</value>

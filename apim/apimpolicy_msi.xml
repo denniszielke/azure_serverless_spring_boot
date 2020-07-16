@@ -1,0 +1,35 @@
+<policies>
+    <inbound>
+        <base />
+        <authentication-managed-identity resource="https://servicebus.azure.net" output-token-variable-name="msi-access-token" ignore-error="false" />
+        <set-header name="Authorization" exists-action="override">
+          <value>@((string)context.Variables["msi-access-token"])</value>
+        </set-header>
+        <set-header name="Content-type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+        <set-header name="Ocp-Apim-Subscription-Key" exists-action="delete" />
+        <set-backend-service base-url="{{ServiceBusQueue}}" />
+        <set-body>@{
+    string messagepayload = "{ name: 'someone' }"; 
+    string[] value;
+    if (context.Request.Headers.TryGetValue("Name", out value))
+    {
+        if(value != null && value.Length > 0 && !String.IsNullOrEmpty(value[0]))
+        {
+            messagepayload = "{ name: '" + value[0] +"' }"; 
+        }
+    }
+    return messagepayload;
+}</set-body>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

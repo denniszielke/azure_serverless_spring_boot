@@ -4,9 +4,8 @@ set -o pipefail
 # ./deploy.sh apim234 
 
 export deployment_name="$1"
-export terra_path="$2"
-export location="$3"
-export subscriptionid="$4"
+export location="$2"
+export subscriptionid="$3"
 
 if [ "$location" == "" ]; then
 location="westeurope"
@@ -52,10 +51,10 @@ echo "initialzing terraform state storage..."
 
 #mkdir $deployment_name
 
-$terra_path init -backend-config="storage_account_name=$TERRAFORM_STORAGE_NAME" -backend-config="container_name=tfstate" -backend-config="access_key=$TERRAFORM_STORAGE_KEY" -backend-config="key=codelab.microsoft.tfstate" ./terraform
+terraform init -backend-config="storage_account_name=$TERRAFORM_STORAGE_NAME" -backend-config="container_name=tfstate" -backend-config="access_key=$TERRAFORM_STORAGE_KEY" -backend-config="key=codelab.microsoft.tfstate" ./terraform
 
 echo "planning terraform..."
-$terra_path plan -out $deployment_name-out.plan -var="deployment_name=$deployment_name" -var="location=$location" -var="tenant_id=$tenantid" -var="object_id=$objectid" -var="subscription_id=$subscriptionid"  ./terraform # -state=PATH=$deployment_name
+terraform plan -out $deployment_name-out.plan -var="deployment_name=$deployment_name" -var="location=$location" -var="tenant_id=$tenantid" -var="object_id=$objectid" -var="subscription_id=$subscriptionid"  ./terraform # -state=PATH=$deployment_name
 
 echo "running terraform apply..."
-$terra_path apply $deployment_name-out.plan #-state=PATH=$deployment_name
+terraform apply $deployment_name-out.plan #-state=PATH=$deployment_name
